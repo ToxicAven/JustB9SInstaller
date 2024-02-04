@@ -1,9 +1,12 @@
-# SafeB9SInstaller
-Safe, simple, user-friendly installer for sighaxed FIRMs
+# JustB9SInstaller
+SafeB9SInstaller, prepackaged with Boot9Strap!
 
-For usage instructions, refer to [Plailect's guide](https://3ds.guide/).
+For usage instructions, refer to [the guide](https://3ds.hacks.guide/).
 
 ## Credits
+* **d0k3**, for making SafeB9SInstaller, OpenFirmLoader and GodMode9
+* **Ihaveamac**, for add2tar.py (Also d0k3, since it's from GodMode9)
+* **luigoalma**, for memcpy.s
 * **Normmatt**, for sdmmc.c / sdmmc.h
 * **Cha(N)**, **Kane49**, and all other FatFS contributors for FatFS
 * **Myria** for the sighax bruteforcer and for finding the sighax (retail&dev) signature
@@ -15,4 +18,3 @@ For usage instructions, refer to [Plailect's guide](https://3ds.guide/).
 * **Gelex** for being of great help on countless occasions
 * The fine folks on **freenode #Cakey**
 * All **[3dbrew.org](https://www.3dbrew.org/wiki/Main_Page) editors**
-* Everyone I possibly forgot, if you think you deserve to be mentioned, just contact me!

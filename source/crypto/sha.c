@@ -1,4 +1,6 @@
 #include "sha.h"
+#include "ui.h"
+#include "qff.h"
 
 void sha_init(u32 mode)
 {
@@ -41,4 +43,10 @@ int sha_cmp(const void* sha, const void* src, u32 size, u32 mode) {
     u8 res[0x20];
     sha_quick(res, src, size, mode);
     return memcmp(sha, res, 0x20);
+}
+
+int sha1_cmp(const void* sha, const void* src, u32 size, u32 mode) {
+    u8 res[0x14];
+    sha_quick(res, src, size, mode);
+    return memcmp(sha, res, 0x14);
 }

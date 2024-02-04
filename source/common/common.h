@@ -38,7 +38,7 @@
     (((v) % (a)) ? ((v) + (a) - ((v) % (a))) : (v))
 
 // SafeB9SInstaller version
-#define VERSION     "0.0.7"
+#define VERSION     "0.1.0"
 
 // name of the FIRM to install (also name of the input path)
 #ifndef OPEN_INSTALLER
@@ -52,9 +52,10 @@
 
 // cosmetic stuff (for installer status)
 #ifndef OPEN_INSTALLER
-#define APP_TITLE   "SafeB9SInstaller" " v" VERSION
-#define APP_URL     "https://github.com/d0k3/SafeB9SInstaller"
-#define APP_USAGE   "Usage instructions: https://%s3ds.guide/", IS_DEVKIT ? "dev." : ""
+#define APP_TITLE    "JustB9SInstaller" " v" VERSION
+#define APP_URL      "https://github.com/ToxicAven/JustB9SInstaller"
+#define SB9S_APP_URL "https://github.com/d0k3/SafeB9SInstaller"
+#define APP_USAGE    "Based on SafeB9SInstaller by d0k3"
 #else
 #define APP_TITLE   "OpenFirmInstaller" " v" VERSION
 #define APP_URL     "https://github.com/d0k3/SafeB9SInstaller"
@@ -68,6 +69,11 @@
 #define FIRM_BUFFER_SIZE    (0x400000)
 #define NAND_BUFFER         ((u8*) 0x21800000)
 #define NAND_BUFFER_SIZE    (0x100000)
+
+// https://github.com/d0k3/GodMode9/blob/master/common/types.h#L18
+#define ALIGN(n)        __attribute__((aligned(n)))
+#define PACKED_ALIGN(n) __attribute__((packed, aligned(n)))
+#define PACKED_STRUCT   PACKED_ALIGN(4)
 
 // testfing flags, only useful to devs
 // #define NO_WRITE     // disables all NAND writes, just for testing

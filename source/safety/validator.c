@@ -86,8 +86,10 @@ u32 ValidateFirm(void* firm, u8* firm_sha, u32 firm_size, char* output) {
     int section_arm9 = -1;
     
     // validate firm header
-    if (ValidateFirmHeader(header, firm_size) != 0)
+    if (ValidateFirmHeader(header, firm_size) != 0) {
+        if (output) snprintf(output, 64, "Invalid FIRM header");
         return 1;
+    }
     
     // hash verify all available sections
     for (u32 i = 0; i < 4; i++) {
@@ -112,7 +114,7 @@ u32 ValidateFirm(void* firm, u8* firm_sha, u32 firm_size, char* output) {
     }
     
     // check provided .SHA
-    if (sha_cmp(firm_sha, firm, firm_size, SHA256_MODE) != 0) {
+    if (sha1_cmp(firm_sha, firm, firm_size, SHA1_MODE) != 0) {
         if (output) snprintf(output, 64, "SHA hash mismatch");
         return 1;
     }

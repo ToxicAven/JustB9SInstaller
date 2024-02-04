@@ -27,3 +27,5 @@ void sha_update(const void* src, u32 size);
 void sha_get(void* res);
 void sha_quick(void* res, const void* src, u32 size, u32 mode);
 int sha_cmp(const void* sha, const void* src, u32 size, u32 mode);
+int sha1_cmp(const void* sha, const void* src, u32 size, u32 mode);
+

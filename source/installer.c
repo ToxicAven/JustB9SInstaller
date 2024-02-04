@@ -7,6 +7,7 @@
 #include "ui.h"
 #include "qff.h"
 #include "hid.h"
+#include "vram.h"
 
 #define COLOR_STATUS(s) ((s == STATUS_GREEN) ? COLOR_BRIGHTGREEN : (s == STATUS_YELLOW) ? COLOR_BRIGHTYELLOW : (s == STATUS_RED) ? COLOR_RED : COLOR_DARKGREY)
 
@@ -51,7 +52,7 @@ u32 ShowInstallerStatus(void) {
     
     // DrawStringF(BOT_SCREEN, pos_xb, pos_yb, COLOR_STD_FONT, COLOR_STD_BG, "SafeB9SInstaller v" VERSION "\n" "-----------------------" "\n" "https://github.com/d0k3/SafeB9SInstaller");
     DrawStringF(BOT_SCREEN, pos_xb, pos_yb, COLOR_STD_FONT, COLOR_STD_BG, APP_TITLE "\n" "%.*s" "\n" APP_URL,
-        strnlen(APP_TITLE, 32), "--------------------------------");
+        strnlen(APP_TITLE, 32), "---------------------------------");
     
     DrawStringF(BOT_SCREEN, pos_x0, pos_y0 + (0*stp), COLOR_STD_FONT, COLOR_STD_BG, "ARM9LoaderHax  -");
     DrawStringF(BOT_SCREEN, pos_x0, pos_y0 + (1*stp), COLOR_STD_FONT, COLOR_STD_BG, "MicroSD Card   -");
@@ -69,7 +70,9 @@ u32 ShowInstallerStatus(void) {
     DrawStringF(BOT_SCREEN, pos_x1, pos_y0 + (5*stp), COLOR_STATUS(statusBackup) , COLOR_STD_BG, "%-21.21s", msgBackup );
     DrawStringF(BOT_SCREEN, pos_x1, pos_y0 + (6*stp), COLOR_STATUS(statusInstall), COLOR_STD_BG, "%-21.21s", msgInstall);
     
-    DrawStringF(BOT_SCREEN, pos_xb, pos_yu - 10, COLOR_STD_FONT, COLOR_STD_BG, APP_USAGE);
+    DrawStringF(BOT_SCREEN, pos_xb, pos_yu - 10 - (1*stp), COLOR_STD_FONT, COLOR_STD_BG, APP_USAGE);
+
+    DrawStringF(BOT_SCREEN, pos_xb, pos_yu - 10, COLOR_STD_FONT, COLOR_STD_BG, SB9S_APP_URL);
     return 0;
 }
 
@@ -111,23 +114,34 @@ u32 SafeB9SInstaller(void) {
     snprintf(msgFirm, 64, "checking...");
     statusFirm = STATUS_YELLOW;
     ShowInstallerStatus();
-    u8 firm_sha[0x20];
-    UINT firm_size;
+    u8 firm_sha[0x14];
+    u64 firm_size;
     bool unknown_payload = false;
-    if ((f_qread(NAME_SIGHAXFIRM, FIRM_BUFFER, 0, FIRM_BUFFER_SIZE, &firm_size) != FR_OK) ||
-        (firm_size < 0x200)) {
+
+    void* firm = FindVTarFileInfo(VRAM0_B9S_FIRM, &firm_size);
+    void* firm_sha_vram = FindVTarFileInfo(VRAM0_B9S_SHA, &bt);
+
+    memcpy(FIRM_BUFFER, firm, firm_size);
+    memcpy(firm_sha, firm_sha_vram, bt);
+
+
+    if /* ((f_qread(NAME_SIGHAXFIRM, FIRM_BUFFER, 0, FIRM_BUFFER_SIZE, &firm_size) != FR_OK) || */
+        (firm_size < 0x200) {
         snprintf(msgFirm, 64, "file not found");
         statusFirm = STATUS_RED;
         return 1;
     }
-    if ((f_qread(NAME_SIGHAXFIRMSHA, firm_sha, 0, 0x20, &bt) != FR_OK) || (bt != 0x20)) {
+
+    if /* ((f_qread(NAME_SIGHAXFIRMSHA, firm_sha, 0, 0x20, &bt) != FR_OK) || */ (bt != 0x14) {
         snprintf(msgFirm, 64, ".sha file not found");
         statusFirm = STATUS_RED;
         return 1;
     }
-    if (ValidateFirm(FIRM_BUFFER, firm_sha, firm_size, NULL) != 0) {
+    char msgValFirm[64];
+    if (ValidateFirm(FIRM_BUFFER, firm_sha, firm_size, msgValFirm) != 0) {
         snprintf(msgFirm, 64, "invalid FIRM");
         statusFirm = STATUS_RED;
+        ShowPrompt(false, "Invalid FIRM detected!\n\n%s", msgValFirm);
         return 1;
     }
     if (CheckFirmSigHax(FIRM_BUFFER) != 0) {
