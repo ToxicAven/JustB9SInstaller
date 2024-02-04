@@ -104,6 +104,21 @@ u32 SafeB9SInstaller(void) {
     }
     InitNandCrypto(); // for sector0x96 crypto and NAND drives
     snprintf(msgSdCard, 64, "%lluMB/%lluMB free", sdFree / (1024 * 1024), sdTotal / (1024 * 1024));
+
+    // Create boot9strap folder if it doesn't exist, needed for firm backup
+    DIR dir;
+    ret = f_opendir(&dir, "0:/boot9strap");
+    if (ret != FR_OK) {
+        f_mkdir("0:/boot9strap");
+        ret = f_opendir(&dir, "0:/boot9strap");
+    }
+    if (ret != FR_OK) {
+        snprintf(msgSdCard, 64, "mkdir failed");
+        statusSdCard = STATUS_RED;
+        return 1;
+    }
+    f_closedir(&dir);
+    
     statusSdCard = (sdFree < MIN_SD_FREE) ? STATUS_RED : STATUS_GREEN;
     ShowInstallerStatus();
     if (sdFree < MIN_SD_FREE) return 1;
